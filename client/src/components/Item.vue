@@ -19,6 +19,7 @@
           data-bs-toggle="modal"
           data-bs-target="#bidAmountModal"
           @click="launchModal"
+          :disabled="biddingDisabled"
         >
           Place Bid
         </button>
@@ -128,7 +129,9 @@
               >
             </p>
             <p class="card-text">
-              <small class="badge rounded-pill bg-info text-black"
+              <small
+                class="badge bg-info text-black text-wrap"
+                style="width: 11rem"
                 >Time Left {{ formatDate(item.biddingStartsAt) }}</small
               >
             </p>
@@ -139,11 +142,13 @@
         <p>Posted on {{ formatDate(item.createdAt) }}</p>
       </div>
     </div>
+    <p>{{ loggedInUser }}</p>
   </div>
 </template>
 
 <script>
 import dayjs from 'dayjs'
+import { mapGetters } from 'vuex'
 export default {
   props: ['item'],
   data() {
@@ -151,6 +156,28 @@ export default {
       placedBidAmount: null,
       backgroundColor: 'indigo-900',
     }
+  },
+  computed: {
+    ...mapGetters({
+      loggedInUser: 'loggedInUser',
+    }),
+    biddingDisabled: function () {
+      if (this.item.bidStatus === true) {
+        return false
+      } else if (
+        this.loggedInUser.isLoggedIn === true &&
+        this.item.bidStatus === true
+      ) {
+        return false
+      } else {
+        return true
+      }
+    },
+    // isLoggedIn: function () {
+    //   if (this.loggedInUser) {
+    //     return !this.logInStatus
+    //   }
+    // },
   },
   methods: {
     formatDate(dateString) {

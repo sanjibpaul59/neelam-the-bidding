@@ -5,4 +5,21 @@ import store from './store'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
 
-createApp(App).use(store).use(router).mount('#app')
+import VueSocketIO from 'vue-3-socket.io'
+import SocketIO from 'socket.io-client'
+
+createApp(App)
+    .use(
+        new VueSocketIO({
+            debug: true,
+            connection: SocketIO('http://localhost:8000'),
+            vuex: {
+                store,
+                actionPrefix: 'SOCKET_',
+                mutationPrefix: 'SOCKET_',
+            },
+        })
+    )
+    .use(store)
+    .use(router)
+    .mount('#app')
