@@ -2,6 +2,10 @@ import { createStore } from 'vuex'
 
 export default createStore({
     state: {
+        users: [
+            { id: 0.34, email: 'paul12@mail.com', password: 12, isLoggedIn: false },
+        ],
+        user: {},
         items: [{
                 id: 1,
                 imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUysQXkwzasWQmSAmHbWHb-5yalLDFQrnduw&usqp=CAU',
@@ -36,8 +40,56 @@ export default createStore({
         getItems(state) {
             return state.items
         },
+        getUsers(state) {
+            return state.users
+        },
+        loggedInUser(state) {
+            return state.user
+        },
     },
-    mutations: {},
-    actions: {},
+    mutations: {
+        ADD_USER(state, payload) {
+            let newUser = payload
+            state.users.push(newUser)
+        },
+        AUTH_USER(state, payload) {
+            let user = state.users.find((user) => user.email === payload.email)
+            if (user) {
+                state.user = user
+                state.user.isLoggedIn = true
+                console.log(user)
+            } else {
+                state.user = {}
+            }
+        },
+        SIGN_OUT(state, payload) {
+            console.log(payload.id)
+            let user = state.users.find((user) => user.id === payload.id)
+            if (user) {
+                state.user = {}
+                user.isLoggedIn = false
+            }
+            const index = state.users.indexOf(user)
+            state.users.splice(index, 1, user)
+        },
+    },
+    actions: {
+        async addUser({ commit }, payload) {
+            let newUser = await payload
+            let userId = Math.random()
+            newUser.id = userId
+            newUser.isLoggedIn = false
+            console.log(newUser)
+            commit('ADD_USER', newUser)
+        },
+        async authUser({ commit }, payload) {
+            let user = await payload
+            commit('AUTH_USER', payload)
+        },
+        async userSignout({ commit }, payload) {
+            let userId = await payload
+            commit('SIGN_OUT', userId)
+        },
+    },
     modules: {},
 })

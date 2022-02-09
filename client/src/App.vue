@@ -15,19 +15,49 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-          <ul class="navbar-nav ms-auto">
+          <ul
+            class="navbar-nav ms-auto"
+            v-if="loggedInUser.isLoggedIn === true"
+          >
             <li class="nav-item">
               <router-link class="nav-link" to="/">Home</router-link>
             </li>
             <li class="nav-item">
               <router-link class="nav-link" to="/about">About</router-link>
             </li>
-            <li class="nav-item" v-if="isLoggedIn">
-              <button @click="userAuth" class="btn btn-link">Sign In</button>
+            <!-- <li class="nav-item">
+              <router-link class="nav-link" to="/signup">Register</router-link>
             </li>
-            <li class="nav-item" v-else>
-              <button @click="userAuth" class="btn btn-link">Sign Out</button>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/signin">Login</router-link>
+            </li> -->
+            <li class="nav-item">
+              <button
+                @click="signOutUser({ id: loggedInUser.id })"
+                class="btn btn-link"
+              >
+                Sign Out
+              </button>
             </li>
+          </ul>
+          <ul class="navbar-nav ms-auto" v-else>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/">Home</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/about">About</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/signup">Register</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/signin">Login</router-link>
+            </li>
+            <!-- <li class="nav-item">
+              <button @click="signOutUser" class="btn btn-link">
+                Sign Out
+              </button>
+            </li> -->
           </ul>
         </div>
       </div>
@@ -37,16 +67,26 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 export default {
   data() {
     return {
-      isLoggedIn: true,
+      logInStatus: false,
+      currentUser: '',
     }
   },
   methods: {
-    userAuth() {
-      this.isLoggedIn = !this.isLoggedIn
+    ...mapActions({
+      userSignout: 'userSignout',
+    }),
+    signOutUser(usr) {
+      this.userSignout(usr)
     },
+  },
+  computed: {
+    ...mapGetters({
+      loggedInUser: 'loggedInUser',
+    }),
   },
 }
 </script>
