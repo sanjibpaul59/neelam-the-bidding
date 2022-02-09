@@ -2,6 +2,8 @@ import { createStore } from 'vuex'
 
 export default createStore({
     state: {
+        isConnected: false,
+        socketMessage: '',
         users: [
             { id: 0.34, email: 'paul12@mail.com', password: 12, isLoggedIn: false },
         ],
@@ -71,6 +73,12 @@ export default createStore({
             }
             const index = state.users.indexOf(user)
             state.users.splice(index, 1, user)
+        },
+        SOCKET_CONNECT(state) {
+            state.isConnected = true
+        },
+        SOCKET_DISCONNECT(state) {
+            state.isConnected = false
         },
     },
     actions: {

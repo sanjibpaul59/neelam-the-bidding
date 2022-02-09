@@ -15,6 +15,7 @@ export default {
     return {
       title: 'Register',
       message: 'Already have a member?',
+      newUser: {},
     }
   },
   methods: {

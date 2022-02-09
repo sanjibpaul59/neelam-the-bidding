@@ -68,12 +68,22 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import SocketService from './services/sockets.service'
+
 export default {
   data() {
     return {
       logInStatus: false,
       currentUser: '',
+      isConnected: false,
+      socketMessage: '',
     }
+  },
+  created() {
+    SocketService.setupSocketConnection()
+  },
+  beforeUnmount() {
+    SocketService.disconnect()
   },
   methods: {
     ...mapActions({
