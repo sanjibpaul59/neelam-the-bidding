@@ -1,13 +1,15 @@
 import { createStore } from 'vuex'
+import router from '../router'
+import { auth } from '../firebase/firebase.config'
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+} from 'firebase/auth'
 
 export default createStore({
     state: {
-        isConnected: false,
-        socketMessage: '',
-        users: [
-            { id: 0.34, email: 'paul12@mail.com', password: 12, isLoggedIn: false },
-        ],
-        user: {},
+        user: null,
         items: [{
                 id: 1,
                 imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUysQXkwzasWQmSAmHbWHb-5yalLDFQrnduw&usqp=CAU',
@@ -42,37 +44,16 @@ export default createStore({
         getItems(state) {
             return state.items
         },
-        getUsers(state) {
-            return state.users
-        },
         loggedInUser(state) {
             return state.user
         },
     },
     mutations: {
-        ADD_USER(state, payload) {
-            let newUser = payload
-            state.users.push(newUser)
-        },
-        AUTH_USER(state, payload) {
-            let user = state.users.find((user) => user.email === payload.email)
-            if (user) {
-                state.user = user
-                state.user.isLoggedIn = true
-                console.log(user)
-            } else {
-                state.user = {}
-            }
+        SET_USER(state, payload) {
+            state.user = payload
         },
         SIGN_OUT(state, payload) {
-            console.log(payload.id)
-            let user = state.users.find((user) => user.id === payload.id)
-            if (user) {
-                state.user = {}
-                user.isLoggedIn = false
-            }
-            const index = state.users.indexOf(user)
-            state.users.splice(index, 1, user)
+            state.user = null
         },
         SOCKET_CONNECT(state) {
             state.isConnected = true
@@ -82,21 +63,75 @@ export default createStore({
         },
     },
     actions: {
-        async addUser({ commit }, payload) {
-            let newUser = await payload
-            let userId = Math.random()
-            newUser.id = userId
-            newUser.isLoggedIn = false
-            console.log(newUser)
-            commit('ADD_USER', newUser)
+        async register({ commit }, userInfo) {
+            const { email, password } = userInfo
+            try {
+                await createUserWithEmailAndPassword(auth, email, password)
+            } catch (error) {
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        alert('Email already in use')
+                        break
+                    case 'auth/weak-password':
+                        alert('Weak Password')
+                        break
+                    case 'auth/invalid-email':
+                        alert('Invalid Email')
+                        break
+                    case 'auth/operation-not-allowed':
+                        alert('Operation not allowed')
+                        break
+                    default:
+                        alert('Something went wrong')
+                }
+                return
+            }
+            commit('SET_USER', auth.currentUser)
+            router.push('/')
         },
-        async authUser({ commit }, payload) {
-            let user = await payload
-            commit('AUTH_USER', payload)
+        async login({ commit }, userInfo) {
+            const { email, password } = userInfo
+            try {
+                await signInWithEmailAndPassword(auth, email, password)
+            } catch (error) {
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        alert('User not found')
+                        break
+                    case 'auth/wrong-password':
+                        alert('wrong credentials')
+                        break
+                    case 'auth/wrong-email':
+                        alert('wrong credentials')
+                        break
+                    default:
+                        alert('Something went wrong')
+                }
+                return
+            }
+            commit('SET_USER', auth.currentUser)
+            router.push('/')
         },
-        async userSignout({ commit }, payload) {
-            let userId = await payload
-            commit('SIGN_OUT', userId)
+        async logout({ commit }) {
+            await signOut(auth)
+            commit('SIGN_OUT')
+            router.push('/signin')
+        },
+        fetchUser({ commit }) {
+            auth.onAuthStateChanged(async(user) => {
+                if (user === null) {
+                    commit('SIGN_OUT')
+                } else {
+                    commit('SET_USER', user)
+
+                    if (
+                        router.isReady() &&
+                        router.currentRoute.value.path === '/signin'
+                    ) {
+                        router.push('/')
+                    }
+                }
+            })
         },
     },
     modules: {},

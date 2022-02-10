@@ -4,7 +4,7 @@
 </template>
 <script>
 import Form from '@/components/Form.vue'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'SignupPage',
@@ -20,16 +20,11 @@ export default {
   },
   methods: {
     ...mapActions({
-      addNewUser: 'addUser',
+      addNewUser: 'register',
     }),
     onClickRegister(value) {
       this.addNewUser(value)
     },
-  },
-  computed: {
-    ...mapGetters({
-      getUsers: 'getUsers',
-    }),
   },
 }
 </script>

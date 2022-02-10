@@ -1,16 +1,16 @@
 <template>
   <div class="text-start">
-    <div class="card mb-3 mt-5" style="max-width: 600px">
+    <div class="card mb-3 mt-5" style="max-width: 660px">
       <div class="card-header">
-        <div class="m-2 badge rounded-pill bg-success font-monospace">
+        <div class="m-1 badge rounded-pill bg-success font-monospace">
           Base Value: {{ item.baseValue }}$
         </div>
         <div
-          class="m-2 badge rounded-pill bg-warning text-black font-monospace"
+          class="m-1 badge rounded-pill bg-warning text-black font-monospace"
         >
           Bid Amount: {{ item.bidAmount }}$
         </div>
-        <div class="m-2 badge rounded-pill text-danger bg-info font-monospace">
+        <div class="m-1 badge rounded-pill text-danger bg-info font-monospace">
           Current Price:
           <span class="fw-bold text-black">{{ item.baseValue }}$</span>
         </div>
@@ -111,7 +111,9 @@
         <div class="col-md-8">
           <div class="card-body">
             <div class="card-title">
-              <span class="card-title">{{ item.itemName }}</span>
+              <span class="card-title fw-bold text-bolder">{{
+                item.itemName
+              }}</span>
               <span
                 class="card-title badge rounded-pill float-end"
                 :class="item.bidStatus ? 'bg-success' : 'bg-danger'"
@@ -120,7 +122,7 @@
               </span>
             </div>
             <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-            <p class="card-text">
+            <p class="fs-6">
               {{ item.description }}
             </p>
             <p class="card-text">
@@ -142,7 +144,6 @@
         <p>Posted on {{ formatDate(item.createdAt) }}</p>
       </div>
     </div>
-    <p>{{ loggedInUser }}</p>
   </div>
 </template>
 
@@ -157,28 +158,7 @@ export default {
       backgroundColor: 'indigo-900',
     }
   },
-  computed: {
-    ...mapGetters({
-      loggedInUser: 'loggedInUser',
-    }),
-    biddingDisabled: function () {
-      if (this.item.bidStatus === true) {
-        return false
-      } else if (
-        this.loggedInUser.isLoggedIn === true &&
-        this.item.bidStatus === true
-      ) {
-        return false
-      } else {
-        return true
-      }
-    },
-    // isLoggedIn: function () {
-    //   if (this.loggedInUser) {
-    //     return !this.logInStatus
-    //   }
-    // },
-  },
+
   methods: {
     formatDate(dateString) {
       const date = dayjs(dateString)
