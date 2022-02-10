@@ -18,87 +18,21 @@
           class="float-end text-white fw-bolder btn btn-sm rounded-pill bg-success font-monospace"
           data-bs-toggle="modal"
           data-bs-target="#bidAmountModal"
-          @click="launchModal"
-          :disabled="biddingDisabled"
+          @click="launchModal(item.bidAmount)"
         >
           Place Bid
         </button>
       </div>
-      <!--Modal-->
-      <div
-        class="modal fade"
-        id="bidAmountModal"
-        tabindex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">
-                Enter Bid Amount
-              </h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <!-- <select
-                class="form-select"
-                aria-label="Default select example"
-                v-model="placedBidAmount"
-              >
-                <option
-                  v-for="amount in item.bidAmount"
-                  :key="amount"
-                  :value="amount"
-                >
-                  {{ amount }}
-                </option>
-              </select> -->
-              <div class="mb-3">
-                <input
-                  type="number"
-                  class="form-control"
-                  aria-describedby="inputHelp"
-                  min="1"
-                  :max="item.bidAmount"
-                  v-model="placedBidAmount"
-                />
-                <div id="inputHelp">
-                  <p class="form-text">
-                    Bid Limit is
-                    <span class="text-bolder text-black"
-                      >{{ item.bidAmount }}$</span
-                    >
-                    <br />
-                    Please be in the limit to proceed.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
-              <button
-                type="submit"
-                class="btn btn-primary"
-                @click="handleBidAmount(placedBidAmount, item.bidAmount)"
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <BidPlaceModal :amount="bidAmount">
+        <template #bidLimit>
+          <p class="form-text">
+            Bid Limit is
+            <span class="text-bolder text-black">{{ item.bidAmount }}$</span>
+            <br />
+            Please be in the limit to proceed.
+          </p>
+        </template>
+      </BidPlaceModal>
       <!--Item Card -->
       <div class="row g-0">
         <div class="col-md-4">
@@ -149,11 +83,16 @@
 
 <script>
 import dayjs from 'dayjs'
-import { mapGetters } from 'vuex'
+import BidPlaceModal from './BidPlaceModal.vue'
+
 export default {
   props: ['item'],
+  components: {
+    BidPlaceModal,
+  },
   data() {
     return {
+      bidAmount: this.item.bidAmount,
       placedBidAmount: null,
       backgroundColor: 'indigo-900',
     }
@@ -170,7 +109,9 @@ export default {
       }
       console.log(placedAmount, bidAmount)
     },
-    launchModal() {},
+    launchModal(name) {
+      console.log(name)
+    },
   },
 }
 </script>
