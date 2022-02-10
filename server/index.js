@@ -3,7 +3,7 @@ const http = require('http').createServer(app)
 
 const io = require('socket.io')(http, {
     cors: {
-        origins: ['http://localhost:8080'],
+        origins: ['http://localhost:8080/'],
     },
 })
 app.get('/', (req, res) => {
@@ -12,11 +12,21 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
     console.log(socket.id, ' connected')
+
     socket.on('disconnect', () => {
         console.log(socket.id, 'disconnected')
     })
-    socket.on('my-message', (arg) => {
-        console.log(`message ${arg}`)
+
+    if (io.sockets.connected)
+        socket.emit('connections', Object.keys(io.sockets.connected).length)
+    else socket.emit('connections', 0)
+
+    socket.on('emit_message', (msg) => {
+        console.log('message: ' + msg)
+    })
+
+    socket.on('typing', (data) => {
+        socket.broadcast.emit('typing', data)
     })
 })
 
