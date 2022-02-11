@@ -1,5 +1,8 @@
 const app = require('express')()
 const http = require('http').createServer(app)
+const morgan = require('morgan')
+
+app.use(morgan('dev'))
 
 const io = require('socket.io')(http, {
     cors: {
