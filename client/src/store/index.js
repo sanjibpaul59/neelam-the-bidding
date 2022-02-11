@@ -39,10 +39,14 @@ export default createStore({
                 biddingEndsAt: new Date(),
             },
         ],
+        item: {},
     },
     getters: {
         getItems(state) {
             return state.items
+        },
+        getItem(state) {
+            return state.item
         },
         loggedInUser(state) {
             return state.user
@@ -60,6 +64,10 @@ export default createStore({
         },
         SOCKET_DISCONNECT(state) {
             state.isConnected = false
+        },
+        FETCH_ITEM(state, payload) {
+            console.log('payload: ' + payload)
+            state.item = state.items.find((i) => i.id == payload)
         },
     },
     actions: {
@@ -132,6 +140,11 @@ export default createStore({
                     }
                 }
             })
+        },
+        async showItem({ commit }, id) {
+            let itemId = id
+            console.log(itemId, id)
+            commit('FETCH_ITEM', itemId)
         },
     },
     modules: {},
