@@ -15,38 +15,27 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-          <ul
-            class="navbar-nav ms-auto"
-            v-if="loggedInUser.isLoggedIn === true"
-          >
+          <ul class="navbar-nav ms-auto" v-if="$store.state.user">
             <li class="nav-item">
               <router-link class="nav-link" to="/">Home</router-link>
             </li>
             <li class="nav-item">
               <router-link class="nav-link" to="/about">About</router-link>
             </li>
-            <!-- <li class="nav-item">
-              <router-link class="nav-link" to="/signup">Register</router-link>
-            </li>
+
             <li class="nav-item">
-              <router-link class="nav-link" to="/signin">Login</router-link>
-            </li> -->
-            <li class="nav-item">
-              <button
-                @click="signOutUser({ id: loggedInUser.id })"
-                class="btn btn-link"
-              >
+              <button class="btn btn-link" @click="signOutUser">
                 Sign Out
               </button>
             </li>
           </ul>
           <ul class="navbar-nav ms-auto" v-else>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
               <router-link class="nav-link" to="/">Home</router-link>
             </li>
             <li class="nav-item">
               <router-link class="nav-link" to="/about">About</router-link>
-            </li>
+            </li> -->
             <li class="nav-item">
               <router-link class="nav-link" to="/signup">Register</router-link>
             </li>
@@ -67,8 +56,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import SocketService from './services/sockets.service'
+import { mapActions } from 'vuex'
 
 export default {
   data() {
@@ -76,34 +64,50 @@ export default {
       logInStatus: false,
       currentUser: '',
       isConnected: false,
-      socketMessage: '',
+      socketMessage: 'hello from vue',
     }
   },
-  created() {
-    SocketService.setupSocketConnection()
-  },
-  beforeUnmount() {
-    SocketService.disconnect()
-  },
-  methods: {
-    ...mapActions({
-      userSignout: 'userSignout',
-    }),
-    signOutUser(usr) {
-      this.userSignout(usr)
+  sockets: {
+    connect: function () {
+      console.log('socket connected')
+    },
+    emit_message: function (data) {
+      return data
     },
   },
-  computed: {
-    ...mapGetters({
-      loggedInUser: 'loggedInUser',
+
+  beforeMount() {
+    this.fetchUser()
+  },
+
+  methods: {
+    ...mapActions({
+      userSignout: 'logout',
+      fetchUser: 'fetchUser',
     }),
+    signOutUser() {
+      this.userSignout()
+    },
+    sendMessage: function (data) {
+      // $socket is socket.io-client instance
+      this.$socket.emit('emit_message', data)
+    },
   },
 }
 </script>
 
 <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body {
+  font-family: 'Roboto', sans-serif;
+}
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

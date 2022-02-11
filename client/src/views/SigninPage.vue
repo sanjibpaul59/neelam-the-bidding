@@ -5,7 +5,7 @@
 
 <script>
 import Form from '@/components/Form.vue'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   name: 'SigninPage',
   components: {
@@ -17,22 +17,13 @@ export default {
       message: "Don't have an account?",
     }
   },
-  // async mounted() {
-  //   await this.fetchUsers()
 
-  // },
-  computed: {
-    ...mapGetters({
-      fetchUsers: 'getUsers',
-      loggedInUser: 'loggedInUser',
-    }),
-  },
   methods: {
     ...mapActions({
-      authUser: 'authUser',
+      authUser: 'login',
     }),
     onClickLogin(value) {
-      let user = this.authUser(value)
+      this.authUser(value)
     },
   },
 }

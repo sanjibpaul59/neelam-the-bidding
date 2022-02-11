@@ -12,7 +12,7 @@ createApp(App)
     .use(
         new VueSocketIO({
             debug: true,
-            connection: SocketIO('http://localhost:8000'),
+            connection: SocketIO('http://localhost:8000/'),
             vuex: {
                 store,
                 actionPrefix: 'SOCKET_',
@@ -22,4 +22,5 @@ createApp(App)
     )
     .use(store)
     .use(router)
-    .mount('#app')
+
+.mount('#app')
